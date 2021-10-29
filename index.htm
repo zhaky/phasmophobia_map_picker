@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <title>Playground</title>
+
+    </head>
+
+    <body>
+
+        <script>
+
+            // Map of maps with sizes
+            const maps = new Map([
+                ["Bleasdale Farmhouse", "small"],
+                ["Edgefield Street House", "small"],
+                ["Grafton Farmhouse", "small"],
+                ["Ridgeview Road House", "small"],
+                ["Tanglewood Street House", "small"],
+                ["Willow Street House", "small"],
+                ["Brownstone High School", "medium"],
+                ["Maple Lodge Campsite", "medium"],
+                ["Prison", "medium"],
+                ["Asylum", "large"],
+            ]);
+                
+            function getRandomNumberBetween(minimum, maximum) {
+                console.log("Getting a number between " + minimum + " and " + maximum);
+                
+                randomNumberSeed = Math.random();
+                console.log("Random number seed: " + randomNumberSeed);
+                
+            randomNumber = Math.floor(randomNumberSeed * (maximum - minimum + 1) + minimum);
+            console.log("Random number: " + randomNumber);
+            
+            return randomNumber;
+            }
+        
+            function getMapSelection() {
+                let mapSelection = [];
+                let formMapPreferences = document.forms["mapPreferences"];
+                let useSmallMaps = formMapPreferences.smallMapCheckBox.checked;
+                let useMediumMaps = formMapPreferences.mediumMapCheckBox.checked;
+                let useLargeMaps = formMapPreferences.largeMapCheckBox.checked;
+
+                if (!useSmallMaps && !useMediumMaps && !useLargeMaps) {
+                    useSmallMaps = useMediumMaps = useLargeMaps = true;
+                }
+
+                console.log(useSmallMaps + ", " + useMediumMaps + ", " + useLargeMaps);
+
+                maps.forEach (function(value, key) {
+                    if (useSmallMaps && value == "small") {
+                        mapSelection.push(key);
+                    }
+                    else if (useMediumMaps && value == "medium") {
+                        mapSelection.push(key);
+                    }
+                    else if (useLargeMaps && value == "large") {
+                        mapSelection.push(key);
+                    }
+                })
+
+                return mapSelection;
+            }
+
+            function pickAMap() {
+                
+                let listOfEligibleMaps = getMapSelection();
+                console.log("Selected maps:\n" + listOfEligibleMaps);
+
+                chosenMapNumber = getRandomNumberBetween(0, listOfEligibleMaps.length - 1);
+
+                console.log("Picking " + listOfEligibleMaps[chosenMapNumber]);
+                return listOfEligibleMaps[chosenMapNumber];
+                
+            }
+           
+            function changeMap() {
+                document.getElementById("map").innerHTML = pickAMap();
+            }
+        
+        </script>
+
+        <div style="height: fit-content; width: 20em; height: 20em; background-color: black; color: whitesmoke; padding: 2em; border-radius: 1.5em;">
+
+            <h1 style="font-family:papyrus; text-align: center; margin: 0em;">Map-picker</h1>
+            <p style="text-align: center;">Pick a random Phasmophobia map</p>
+            <p>Maximum map size:</p>
+            <form name="mapPreferences">
+                <input type="checkbox" id="smallMapCheckBox" name="smallMapCheckBox" value="small">
+                <label for="smallMapCheckBox">Small</label><br>
+                <input type="checkbox" id="mediumMapCheckBox" name="mediumMapCheckBox" value="medium">
+                <label for="mediumMapCheckBox">Medium</label><br>
+                <input type="checkbox" id="largeMapCheckBox" name="largeMapCheckBox" value="large">
+                <label for="largeMapCheckBox">Large</label>
+                <br>
+                <br>
+                <div style="text-align: center;">
+                    <button style="background-color:ghostwhite; padding: .5em; border: none; border-radius: 1em;" type="button" onclick="changeMap()">Pick a map</button> 
+                </div>
+            </form>
+                    
+            <h3 style="text-align: center;">Map:</h3>
+
+            <h2 style="text-align: center; font-family: papyrus;" id="map"></h2>
+            
+        </div>
+        
+    </body>
+    
+</html>
