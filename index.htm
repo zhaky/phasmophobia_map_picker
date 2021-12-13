@@ -2,14 +2,39 @@
 <html>
 
     <head>
-
+        
         <title>Playground</title>
-
+        
     </head>
-
+    
     <body>
-
+        
         <!-- To embed the code. Select from here and... -->
+        
+        <div style="height: fit-content; width: 20em; height: 20em; background-color: black; color: whitesmoke; padding: 2em; border-radius: 1.5em;">
+        
+            <h1 style="font-family: Papyrus; text-align: center; margin: 0em;">Map-picker</h1>
+            <p style="text-align: center;">Pick a random Phasmophobia map</p>
+            <p>Choose the map sizes you want:</p>
+            <form name="mapPreferences">
+                <input type="checkbox" onclick="mapPreferenceChange()" id="smallMapCheckBox" name="smallMapCheckBox" value="small">
+                <label for="smallMapCheckBox">Small</label><br>
+                <input type="checkbox" onclick="mapPreferenceChange()" id="mediumMapCheckBox" name="mediumMapCheckBox" value="medium">
+                <label for="mediumMapCheckBox">Medium</label><br>
+                <input type="checkbox" onclick="mapPreferenceChange()" id="largeMapCheckBox" name="largeMapCheckBox" value="large">
+                <label for="largeMapCheckBox">Large</label>
+                <br>
+                <br>
+                <div style="text-align: center;">
+                    <button style="background-color:ghostwhite; padding: .5em; border: none; border-radius: 1em;" type="button" onclick="pickARandomMap()">Pick a map</button> 
+                </div>
+            </form>
+                    
+            <h3 style="text-align: center;">Map:</h3>
+        
+            <h2 style="text-align: center; font-family: Papyrus;" id="map"></h2>
+            
+        </div>
 
         <script>
 
@@ -86,7 +111,7 @@
                 document.getElementById("map").innerHTML = title;
             }
             
-            var listOfMaps = [];
+            var listOfMaps = getMapSelection();
             
             function addEligibleMapsToListOfMaps() {
                 let mapSelection = getMapSelection();
@@ -97,7 +122,7 @@
             
             function mapPreferenceChange() {
                 console.log("User changed mapPreferences")
-                listOfMaps = [];
+                listOfMaps = getMapSelection();
             }
 
             function removeMapFromListOfMaps(randomMap) {
@@ -126,13 +151,13 @@
             function getRandomMap() {
                 randomMapNumber = getRandomNumberBetween(0, listOfMaps.length - 1);
                 
-                // Add one of each map to the list of maps
-                addEligibleMapsToListOfMaps();
-                
                 // Grab the map chosen
                 let randomMap = listOfMaps[randomMapNumber];
                 console.log("Random map: " + randomMap.name);
-
+                
+                // Add one of each map to the list of maps
+                addEligibleMapsToListOfMaps();
+                
                 // Remove the chosen map from the list
                 removeMapFromListOfMaps(randomMap);
                 
@@ -150,31 +175,6 @@
             }
             
         </script>
-
-        <div style="height: fit-content; width: 20em; height: 20em; background-color: black; color: whitesmoke; padding: 2em; border-radius: 1.5em;">
-
-            <h1 style="font-family: Papyrus; text-align: center; margin: 0em;">Map-picker</h1>
-            <p style="text-align: center;">Pick a random Phasmophobia map</p>
-            <p>Choose the map sizes you want:</p>
-            <form name="mapPreferences">
-                <input type="checkbox" onclick="mapPreferenceChange()" id="smallMapCheckBox" name="smallMapCheckBox" value="small">
-                <label for="smallMapCheckBox">Small</label><br>
-                <input type="checkbox" onclick="mapPreferenceChange()" id="mediumMapCheckBox" name="mediumMapCheckBox" value="medium">
-                <label for="mediumMapCheckBox">Medium</label><br>
-                <input type="checkbox" onclick="mapPreferenceChange()" id="largeMapCheckBox" name="largeMapCheckBox" value="large">
-                <label for="largeMapCheckBox">Large</label>
-                <br>
-                <br>
-                <div style="text-align: center;">
-                    <button style="background-color:ghostwhite; padding: .5em; border: none; border-radius: 1em;" type="button" onclick="pickARandomMap()">Pick a map</button> 
-                </div>
-            </form>
-                    
-            <h3 style="text-align: center;">Map:</h3>
-
-            <h2 style="text-align: center; font-family: Papyrus;" id="map"></h2>
-            
-        </div>
         
         <!-- ... stop here, for the embeded code -->
         
