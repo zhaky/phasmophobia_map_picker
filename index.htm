@@ -13,76 +13,142 @@
 
         <script>
 
-            // Map of maps with sizes
-            const maps = new Map([
-                ["Bleasdale Farmhouse", "small"],
-                ["Edgefield Street House", "small"],
-                ["Grafton Farmhouse", "small"],
-                ["Ridgeview Road House", "small"],
-                ["Tanglewood Street House", "small"],
-                ["Willow Street House", "small"],
-                ["Brownstone High School", "medium"],
-                ["Maple Lodge Campsite", "medium"],
-                ["Prison", "medium"],
-                ["Asylum", "large"],
-            ]);
-                
-            function getRandomNumberBetween(minimum, maximum) {
-                console.log("Getting a number between " + minimum + " and " + maximum);
-                
-                randomNumberSeed = Math.random();
-                console.log("Random number seed: " + randomNumberSeed);
-                
-            randomNumber = Math.floor(randomNumberSeed * (maximum - minimum + 1) + minimum);
-            console.log("Random number: " + randomNumber);
+            const maps = [
+                {"name": "Bleasdale Farmhouse", "size": "small"},
+                {"name": "Edgefield Street House", "size": "small"},
+                {"name": "Grafton Farmhouse", "size": "small"},
+                {"name": "Ridgeview Road House", "size": "small"},
+                {"name": "Tanglewood Street House", "size": "small"},
+                {"name": "Willow Street House", "size": "small"},
+                {"name": "Brownstone High School", "size": "medium"},
+                {"name": "Maple Lodge Campsite", "size": "medium"}, 
+                {"name": "Prison", "size": "medium"},
+                {"name": "Asylum", "size": "large"},
+            ];
+
+            var maxMapWeight = 0;
             
-            return randomNumber;
+            /*
+            Just to clarify: the weight is used to differ between maps that have already been picked, 
+            to decrease the chance of getting the same maps over and over again
+            */
+           
+           function getRandomNumberBetween(minimum, maximum) {
+               console.log("Getting a number between " + minimum + " and " + maximum);
+               
+               randomNumberSeed = Math.random();
+               console.log("Random number seed: " + randomNumberSeed);
+               
+               randomNumber = Math.floor(randomNumberSeed * (maximum - minimum + 1) + minimum);
+               console.log("Random number: " + randomNumber);
+               
+               return randomNumber;
+            }
+            
+            function getMapPreference() {
+                return document.forms["mapPreferences"];
             }
         
             function getMapSelection() {
                 let mapSelection = [];
-                let formMapPreferences = document.forms["mapPreferences"];
+                let formMapPreferences = getMapPreference();
                 let useSmallMaps = formMapPreferences.smallMapCheckBox.checked;
                 let useMediumMaps = formMapPreferences.mediumMapCheckBox.checked;
                 let useLargeMaps = formMapPreferences.largeMapCheckBox.checked;
 
+                // If none are chosen, assume all to be true
                 if (!useSmallMaps && !useMediumMaps && !useLargeMaps) {
                     useSmallMaps = useMediumMaps = useLargeMaps = true;
                 }
 
-                console.log(useSmallMaps + ", " + useMediumMaps + ", " + useLargeMaps);
-
-                maps.forEach (function(value, key) {
-                    if (useSmallMaps && value == "small") {
-                        mapSelection.push(key);
+                console.log("smallMaps: " + useSmallMaps + ", mediumMaps: " + useMediumMaps + ", largeMaps: " + useLargeMaps);
+                
+                // Select maps of the selected size
+                maps.forEach(function(map) {
+                    if (useSmallMaps && map.size === "small") {
+                        mapSelection.push(map);
                     }
-                    else if (useMediumMaps && value == "medium") {
-                        mapSelection.push(key);
+                    if (useMediumMaps && map.size === "medium") {
+                        mapSelection.push(map);
                     }
-                    else if (useLargeMaps && value == "large") {
-                        mapSelection.push(key);
+                    if (useLargeMaps && map.size === "large") {
+                        mapSelection.push(map);
                     }
                 })
+
+                console.log("Map selection:");
+                console.table(mapSelection);
 
                 return mapSelection;
             }
 
-            function pickAMap() {
+            function setMapTitle(title) {
+                document.getElementById("map").innerHTML = title;
+            }
+            
+            var listOfMaps = [];
+            
+            function addEligibleMapsToListOfMaps() {
+                let mapSelection = getMapSelection();
+                listOfMaps = listOfMaps.concat(mapSelection);
+                console.log("List of maps: ");
+                console.table(listOfMaps)
+            }
+            
+            function mapPreferenceChange() {
+                console.log("User changed mapPreferences")
+                listOfMaps = [];
+            }
+
+            function removeMapFromListOfMaps(randomMap) {
+                if (listOfMaps.length > 1) {
+                    console.log("Removing: " + randomMap.name);
+                    listOfMaps.forEach(function(map) {
+                        if (map.name === randomMap.name) {
+                            let mapIndex = listOfMaps.indexOf(map);
+                            console.log(listOfMaps[mapIndex].name + " removed");
+                            listOfMaps.splice(mapIndex, 1);
+                        }
+                    })
+                } 
+                if (listOfMaps.length < 1) {
+                    console.log("There are no maps to remove");
+                    listOfMaps = getMapSelection();
+                } 
+                if (listOfMaps.length === 1) {
+                    console.log("There's only one map in the list. I'm not removing that");
+                }
+
+                console.log("New list of maps: ");
+                console.table(listOfMaps);
+            }
+            
+            function getRandomMap() {
+                randomMapNumber = getRandomNumberBetween(0, listOfMaps.length - 1);
                 
-                let listOfEligibleMaps = getMapSelection();
-                console.log("Selected maps:\n" + listOfEligibleMaps);
+                // Add one of each map to the list of maps
+                addEligibleMapsToListOfMaps();
+                
+                // Grab the map chosen
+                let randomMap = listOfMaps[randomMapNumber];
+                console.log("Random map: " + randomMap.name);
 
-                chosenMapNumber = getRandomNumberBetween(0, listOfEligibleMaps.length - 1);
+                // Remove the chosen map from the list
+                removeMapFromListOfMaps(randomMap);
+                
+                // Return the chosen map
+                return randomMap;
+            }
+            
+            function pickARandomMap() {
 
-                console.log("Picking " + listOfEligibleMaps[chosenMapNumber]);
-                return listOfEligibleMaps[chosenMapNumber];
+                chosenMap = getRandomMap();
+                console.log("Chosen map: " + chosenMap.name);
+
+                setMapTitle(chosenMap.name);
                 
             }
-           
-            function changeMap() {
-                document.getElementById("map").innerHTML = pickAMap();
-            }
-        
+            
         </script>
 
         <div style="height: fit-content; width: 20em; height: 20em; background-color: black; color: whitesmoke; padding: 2em; border-radius: 1.5em;">
@@ -91,16 +157,16 @@
             <p style="text-align: center;">Pick a random Phasmophobia map</p>
             <p>Choose the map sizes you want:</p>
             <form name="mapPreferences">
-                <input type="checkbox" id="smallMapCheckBox" name="smallMapCheckBox" value="small">
+                <input type="checkbox" onclick="mapPreferenceChange()" id="smallMapCheckBox" name="smallMapCheckBox" value="small">
                 <label for="smallMapCheckBox">Small</label><br>
-                <input type="checkbox" id="mediumMapCheckBox" name="mediumMapCheckBox" value="medium">
+                <input type="checkbox" onclick="mapPreferenceChange()" id="mediumMapCheckBox" name="mediumMapCheckBox" value="medium">
                 <label for="mediumMapCheckBox">Medium</label><br>
-                <input type="checkbox" id="largeMapCheckBox" name="largeMapCheckBox" value="large">
+                <input type="checkbox" onclick="mapPreferenceChange()" id="largeMapCheckBox" name="largeMapCheckBox" value="large">
                 <label for="largeMapCheckBox">Large</label>
                 <br>
                 <br>
                 <div style="text-align: center;">
-                    <button style="background-color:ghostwhite; padding: .5em; border: none; border-radius: 1em;" type="button" onclick="changeMap()">Pick a map</button> 
+                    <button style="background-color:ghostwhite; padding: .5em; border: none; border-radius: 1em;" type="button" onclick="pickARandomMap()">Pick a map</button> 
                 </div>
             </form>
                     
